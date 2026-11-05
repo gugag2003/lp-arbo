@@ -50,8 +50,7 @@ if cam is None:
 
 sc.camera = cam
 B.exclui('Acesas', True)  # o clipe parte do quadro do hero (passe base)
-for ob in (B.colecao('Mascaras').all_objects if B.colecao('Mascaras', False) else []):
-    ob.hide_render = True
+B.exclui('Mascaras', True)  # as máscaras dos andares só servem para o passe ids
 for nome in B.TIPOLOGIAS.values():  # as maquetes cortadas não aparecem na torre
     B.exclui(nome, True)
 B.cycles(o['amostras'])

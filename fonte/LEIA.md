@@ -38,7 +38,7 @@ Os scripts desta pasta refazem cada passo e geram os arquivos **no mesmo formato
 - Faça tudo primeiro com **poucas amostras** (`--amostras 16`) para acertar câmera, luz e enquadramento. Só no fim rode com as amostras finais.
 - Deixe o computador ligado na tomada, sem suspender. No Mac, ponha `caffeinate -i` na frente do comando (`caffeinate -i npm run blender -- hero.py`); no Windows, em Configurações › Sistema › Energia, ponha "Suspender" em "Nunca" enquanto renderiza. Um render parado no meio pode ser retomado: o `clipe.py` pula os quadros que já existem.
 - Memória: com 16 GB de RAM ou mais, tudo cabe. Com 8 GB, a placa de 8× (4160×9600) e os atlas de 4096 podem travar: faça a placa só em 2× e 4× (`--placa 2,4`) e a maquete com `--lado 2048`.
-- Para ter uma ideia: num computador de nuvem fraco (4 núcleos de processador, sem placa de vídeo), com a cena de exemplo e pouquíssimas amostras, o passe base do hero levou 0,5 min, a placa de 8× levou 6 a 8 min por passe e os 78 quadros do voo, uns 20 min. Uma cena de verdade, com as amostras finais, leva muitas vezes mais.
+- Para ter uma ideia: num computador de nuvem fraco (4 núcleos de processador, sem placa de vídeo), com a cena de exemplo e pouquíssimas amostras, o passe base do hero levou 0,5 min, a placa de 8× levou 6 a 8 min por passe e os 78 quadros do voo, uns 16 min. Uma cena de verdade, com as amostras finais, leva muitas vezes mais.
 - Cada passo é independente. Dá para refazer só a fachada hoje e o voo outro dia.
 
 **Caminhos sem Blender** (o site já tem reserva para cada peça que faltar):
