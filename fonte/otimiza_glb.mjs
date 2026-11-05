@@ -4,10 +4,11 @@
 // Uso: npm run otimiza:glb
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { precisa, RENDER, PUBLIC } from './_deps.mjs';
 
 // o pacote não exporta o bin: o caminho é direto em node_modules
-const cli = new URL('../node_modules/@gltf-transform/cli/bin/cli.js', import.meta.url).pathname;
+const cli = fileURLToPath(new URL('../node_modules/@gltf-transform/cli/bin/cli.js', import.meta.url));
 if (!fs.existsSync(cli)) await precisa('@gltf-transform/cli-ausente'); // explica como instalar e sai
 const roda = (...a) => {
   const r = spawnSync(process.execPath, [cli, ...a], { stdio: 'inherit' });

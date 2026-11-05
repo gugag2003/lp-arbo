@@ -108,7 +108,7 @@ def assa_imagem(ob, lado, nome):
     t0 = time.time()
     bpy.ops.object.bake(type='COMBINED', margin=8, use_clear=True, target='IMAGE_TEXTURES')
     print(f'  atlas {nome}: {(time.time() - t0) / 60:.1f} min')
-    caminho = os.path.join(B.RENDER, 'glb', f'_{nome}.png')
+    caminho = os.path.join(B.RENDER, 'glb', f'_{TIP}_{nome}.png')
     os.makedirs(os.path.dirname(caminho), exist_ok=True)
     sc.render.image_settings.file_format = 'PNG'
     sc.render.image_settings.color_depth = '8'
@@ -135,42 +135,47 @@ def assa_vertices(ob):
 
 B.cycles(o['amostras'], ruido=False)
 sc.render.bake.use_selected_to_active = False
-for tip in [t for t in o['tipologia'].split(',') if t]:
+for TIP in [t for t in o['tipologia'].split(',') if t]:
+    tip = TIP
     col = B.colecao(B.TIPOLOGIAS[tip])
     for nome in B.TIPOLOGIAS.values():
         B.exclui(nome, nome != B.TIPOLOGIAS[tip])
+    # pelos nomes: depois de juntar e assar, as referências Python aos objetos da coleção perdem a validade
+    proprios = [ob.name for ob in col.all_objects if ob.type == 'MESH' and not ob.hide_render]
+    # só a maquete conta na luz: a torre e a cidade (que ficam no mesmo lugar da cena) somem do bake
+    fora = [ob.name for ob in sc.objects if ob.type in ('MESH', 'CURVE') and ob.name not in col.all_objects and not ob.hide_render]
+    for n in fora:
+        bpy.data.objects[n].hide_render = True
     por_grupo = {}
-    for ob in col.all_objects:
-        if ob.type == 'MESH' and not ob.hide_render:
-            por_grupo.setdefault(grupo(ob), []).append(ob)
+    for n in proprios:
+        ob = bpy.data.objects[n]
+        por_grupo.setdefault(grupo(ob), []).append(ob)
     print(tip, {k: len(v) for k, v in por_grupo.items()})
-    juntos = []
-    for g, objs in por_grupo.items():
-        j = junta(objs, g)
-        juntos.append(j)
-    # assa com a cena inteira presente (sombras e reflexos dos outros grupos), cada grupo por vez
-    for ob in col.all_objects:
-        ob.hide_render = True
-    for j in juntos:
-        g = j.name
-        if g in ASSADOS:
-            assa_imagem(j, o['lado'], g)
-        elif g == 'folhas':
+    juntos = [junta(objs, g).name for g, objs in por_grupo.items()]
+    # assa com a maquete inteira presente (sombras e reflexos entre os grupos), cada grupo por vez
+    for n in proprios:
+        bpy.data.objects[n].hide_render = True
+    for n in juntos:
+        j = bpy.data.objects[n]
+        if n in ASSADOS:
+            assa_imagem(j, o['lado'], n)
+        elif n == 'folhas':
             assa_vertices(j)
-    for j in juntos:
-        if j.name in COR:
+    for n in juntos:
+        j = bpy.data.objects[n]
+        if n in COR:
             j.data.materials.clear()
-            j.data.materials.append(material_cor(j.name, *COR[j.name]))
+            j.data.materials.append(material_cor(n, *COR[n]))
     bpy.ops.object.select_all(action='DESELECT')
-    for j in juntos:
-        j.select_set(True)
+    for n in juntos:
+        bpy.data.objects[n].select_set(True)
     destino = os.path.join(B.RENDER, 'glb', f'{tip}.glb')
     bpy.ops.export_scene.gltf(filepath=destino, export_format='GLB', use_selection=True, export_apply=True,
                               export_yup=True, export_texcoords=True, export_normals=False,
                               export_vertex_color='MATERIAL', export_image_format='AUTO', export_cameras=False,
                               export_lights=False, export_extras=False)
     print('ok', destino)
-    for j in juntos:
-        bpy.data.objects.remove(j)
-    for ob in col.all_objects:
-        ob.hide_render = False
+    for n in juntos:
+        bpy.data.objects.remove(bpy.data.objects[n])
+    for n in proprios + fora:
+        bpy.data.objects[n].hide_render = False

@@ -5,8 +5,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
-const AQUI = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
+const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const [script, ...resto] = process.argv.slice(2);
 if (!script) {
   console.error('Uso: npm run blender -- <script.py> [opções]   (scripts em fonte/: hero.py, modelos.py, exporta_glb.py, clipe.py, cena_exemplo.py)');
