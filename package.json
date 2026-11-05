@@ -7,9 +7,12 @@
     "dev": "vite --port 5197 --strictPort",
     "build": "vite build",
     "preview": "vite preview --port 5197 --strictPort",
+    "blender": "node fonte/blender.mjs",
+    "andares": "node fonte/andares.mjs",
+    "hotspots": "node fonte/hotspots.mjs",
     "otimiza": "node fonte/otimiza.mjs",
     "otimiza:glb": "node fonte/otimiza_glb.mjs",
-    "hotspots": "cd ../.. && npm run blender -- templates/arbo/fonte/hotspots.py"
+    "clipe": "node fonte/clipe.mjs"
   },
   "dependencies": {
     "@fontsource/instrument-serif": "5.3.0",
